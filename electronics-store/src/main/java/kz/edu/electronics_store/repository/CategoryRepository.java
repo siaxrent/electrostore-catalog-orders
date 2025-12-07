@@ -1,0 +1,6 @@
+package kz.edu.electronics_store.repository;
+
+import kz.edu.electronics_store.entity.Category;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CategoryRepository extends JpaRepository<Category, Long> {}

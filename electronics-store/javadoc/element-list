@@ -1,0 +1,9 @@
+kz.edu.electronics_store
+kz.edu.electronics_store.config
+kz.edu.electronics_store.controller
+kz.edu.electronics_store.dto
+kz.edu.electronics_store.entity
+kz.edu.electronics_store.exception
+kz.edu.electronics_store.repository
+kz.edu.electronics_store.service
+kz.edu.electronics_store.service.impl

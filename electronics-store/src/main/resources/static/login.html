@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход — Electronics Store</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <style>
+        .login-layout {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(circle at top, rgba(56,189,248,0.16), transparent 55%),
+                radial-gradient(circle at bottom, rgba(168,85,247,0.10), transparent 55%),
+                #e5e7eb;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 380px;
+        }
+        .login-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .login-subtitle {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 18px;
+        }
+        body.theme-light .login-subtitle {
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+<div class="login-layout">
+    <article class="card login-card">
+        <div class="section-title-row">
+            <div>
+                <div class="login-title" id="loginTitle">Вход</div>
+                <div class="login-subtitle" id="loginSubtitle">Введите логин и пароль администратора</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <button class="btn btn-ghost" id="langToggle">RU</button>
+            </div>
+        </div>
+        <div class="content">
+            <div class="form-grid">
+                <div>
+                    <label for="loginUsername" id="loginUserLabel">Логин</label>
+                    <input id="loginUsername" type="text" placeholder="admin">
+                </div>
+                <div>
+                    <label for="loginPassword" id="loginPassLabel">Пароль</label>
+                    <input id="loginPassword" type="password" placeholder="••••••••">
+                </div>
+            </div>
+            <button class="btn" id="btnLogin">Войти</button>
+        </div>
+    </article>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+    const loginTexts = {
+        ru: {
+            title: 'Вход',
+            subtitle: 'Введите логин и пароль администратора',
+            userLabel: 'Логин',
+            passLabel: 'Пароль',
+            button: 'Войти',
+            errorEmpty: 'Введите логин и пароль',
+            success: 'Успешный вход'
+        },
+        en: {
+            title: 'Sign in',
+            subtitle: 'Enter administrator login and password',
+            userLabel: 'Username',
+            passLabel: 'Password',
+            button: 'Sign in',
+            errorEmpty: 'Enter username and password',
+            success: 'Signed in'
+        }
+    };
+
+    function applyLoginLang(lang) {
+        const t = loginTexts[lang];
+        document.getElementById('loginTitle').textContent = t.title;
+        document.getElementById('loginSubtitle').textContent = t.subtitle;
+        document.getElementById('loginUserLabel').textContent = t.userLabel;
+        document.getElementById('loginPassLabel').textContent = t.passLabel;
+        document.getElementById('btnLogin').textContent = t.button;
+    }
+
+    async function handleLogin() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+        const t = loginTexts[CURRENT_LANG];
+        if (!username || !password) {
+            showToast(t.errorEmpty, 'error');
+            return;
+        }
+        setAuthToken(username, password);
+        // Опционально можно сделать пробный запрос, но для простоты сразу переходим
+        showToast(t.success, 'success');
+        setTimeout(() => window.location.href = '/', 600);
+    }
+
+    document.getElementById('btnLogin').addEventListener('click', handleLogin);
+    initLanguageToggle(applyLoginLang);
+</script>
+</body>
+</html>
+
+

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Товары — Electronics Store</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="logo">
+            <span class="logo-dot"></span>
+            <span>Electronics Store</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="nav-link" href="/">🏠 Главная</a>
+            <a class="nav-link" href="/categories.html">📁 Категории</a>
+            <a class="nav-link active" href="/products.html">💻 Товары</a>
+            <a class="nav-link" href="/orders.html">🧾 Заказы</a>
+        </nav>
+    </aside>
+    <main class="main">
+        <header class="main-header">
+            <div>
+                <div class="main-title" id="productsTitle">Товары</div>
+                <div class="main-subtitle" id="productsSubtitle">Каталог продукции</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <button class="btn btn-ghost" id="langToggle">RU</button>
+            </div>
+        </header>
+        <div class="content">
+            <section class="card">
+                <div class="section-title-row">
+                    <div class="card-title" id="productsFilterTitle">Фильтр</div>
+                </div>
+                <div class="form-grid">
+                    <div>
+                        <label for="filterQuery" id="filterQueryLabel">Поиск по названию или артикулу</label>
+                        <input id="filterQuery" type="text" placeholder="Например, iPhone или артикул SKU-IPH-15">
+                    </div>
+                    <div>
+                        <label for="filterType" id="filterTypeLabel">Вид товара</label>
+                        <select id="filterType">
+                            <option value="">Все типы</option>
+                            <option value="SMARTPHONES_AND_GADGETS">Смартфоны и гаджеты</option>
+                            <option value="COMPUTERS_AND_LAPTOPS">Компьютеры и ноутбуки</option>
+                            <option value="PC_COMPONENTS">Комплектующие для ПК</option>
+                            <option value="PC_PERIPHERALS_AND_ACCESSORIES">Периферия и аксессуары для ПК</option>
+                            <option value="TV_AND_VIDEO">Телевизоры и видео</option>
+                            <option value="AUDIO">Аудио</option>
+                            <option value="PHOTO_AND_VIDEO">Фото и видеотехника</option>
+                            <option value="GAMES_AND_CONSOLES">Игры и консоли</option>
+                            <option value="SMART_HOME">Умный дом</option>
+                            <option value="NETWORK_EQUIPMENT">Сетевое оборудование</option>
+                            <option value="OFFICE_EQUIPMENT">Оргтехника и офис</option>
+                            <option value="STORAGE_AND_MEMORY">Носители и память</option>
+                            <option value="CABLES_AND_ADAPTERS">Кабели и переходники</option>
+                            <option value="CHARGERS_AND_POWER">Зарядки и питание</option>
+                            <option value="SMALL_APPLIANCES">Бытовая техника (малая)</option>
+                            <option value="CLIMATE_APPLIANCES">Климатическая техника</option>
+                            <option value="CAR_ELECTRONICS">Автоэлектроника</option>
+                            <option value="TOOLS_AND_METERS">Инструменты и измерительные приборы</option>
+                            <option value="HOME_ELECTRONICS">Товары для дома (электроника)</option>
+                            <option value="DISCOUNT_AND_SALE">Уценка / Распродажа</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="grid-two">
+                <article class="card">
+                    <div class="section-title-row">
+                        <div class="card-title" id="productsListTitle">Список товаров</div>
+                        <button class="btn btn-ghost" id="btnRefreshProducts">Обновить</button>
+                    </div>
+                    <div class="table-wrapper" style="max-height: 360px;">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th id="productsSkuTh">SKU</th>
+                                <th id="productsNameTh">Название</th>
+                                <th id="productsTypeTh">Тип</th>
+                                <th id="productsPriceTh">Цена</th>
+                                <th id="productsStockTh">Остаток</th>
+                                <th id="productsCategoryTh">Категория</th>
+                            </tr>
+                            </thead>
+                            <tbody id="productsBody">
+                            <tr><td colspan="7" class="muted">Нет данных</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+                <article class="card">
+                    <div class="section-title-row">
+                        <div class="card-title" id="productsAddTitle">Добавить товар</div>
+                    </div>
+                    <div class="content">
+                        <div class="form-grid">
+                            <div>
+                                <label for="prodSku" id="prodSkuLabel">Артикул</label>
+                                <input id="prodSku" type="text" placeholder="SKU-IPH-15">
+                            </div>
+                            <div>
+                                <label for="prodName" id="prodNameLabel">Название</label>
+                                <input id="prodName" type="text" placeholder="iPhone 15">
+                            </div>
+                            <div>
+                                <label for="prodPrice" id="prodPriceLabel">Цена</label>
+                                <input id="prodPrice" type="number" step="0.01" placeholder="499999.00">
+                            </div>
+                            <div>
+                                <label for="prodStock" id="prodStockLabel">Остаток (stock)</label>
+                                <input id="prodStock" type="number" placeholder="10">
+                            </div>
+                            <div>
+                                <label for="prodType" id="prodTypeLabel">Вид товара</label>
+                                <select id="prodType">
+                                    <!-- Базовые виды (как в примерах) -->
+                                    <option value="SMARTPHONE">Смартфон</option>
+                                    <option value="LAPTOP">Ноутбук</option>
+                                    <option value="TABLET">Планшет</option>
+                                    <option value="MONITOR">Монитор</option>
+                                    <option value="ACCESSORY">Аксессуар</option>
+                                    <!-- Расширенный список видов -->
+                                    <option value="SMARTPHONES_AND_GADGETS">Смартфоны и гаджеты</option>
+                                    <option value="COMPUTERS_AND_LAPTOPS">Компьютеры и ноутбуки</option>
+                                    <option value="PC_COMPONENTS">Комплектующие для ПК</option>
+                                    <option value="PC_PERIPHERALS_AND_ACCESSORIES">Периферия и аксессуары для ПК</option>
+                                    <option value="TV_AND_VIDEO">Телевизоры и видео</option>
+                                    <option value="AUDIO">Аудио</option>
+                                    <option value="PHOTO_AND_VIDEO">Фото и видеотехника</option>
+                                    <option value="GAMES_AND_CONSOLES">Игры и консоли</option>
+                                    <option value="SMART_HOME">Умный дом</option>
+                                    <option value="NETWORK_EQUIPMENT">Сетевое оборудование</option>
+                                    <option value="OFFICE_EQUIPMENT">Оргтехника и офис</option>
+                                    <option value="STORAGE_AND_MEMORY">Носители и память</option>
+                                    <option value="CABLES_AND_ADAPTERS">Кабели и переходники</option>
+                                    <option value="CHARGERS_AND_POWER">Зарядки и питание</option>
+                                    <option value="SMALL_APPLIANCES">Бытовая техника (малая)</option>
+                                    <option value="CLIMATE_APPLIANCES">Климатическая техника</option>
+                                    <option value="CAR_ELECTRONICS">Автоэлектроника</option>
+                                    <option value="TOOLS_AND_METERS">Инструменты и измерительные приборы</option>
+                                    <option value="HOME_ELECTRONICS">Товары для дома (электроника)</option>
+                                    <option value="DISCOUNT_AND_SALE">Уценка / Распродажа</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="prodCategoryId" id="prodCategoryLabel">Категория</label>
+                                <select id="prodCategoryId">
+                                    <option value="">Загрузка...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn" id="btnAddProduct">Добавить товар</button>
+                    </div>
+                </article>
+            </section>
+        </div>
+    </main>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+    const productsTexts = {
+        ru: {
+            title: 'Товары',
+            subtitle: 'Каталог продукции',
+            filterTitle: 'Фильтр',
+            listTitle: 'Список товаров',
+            addTitle: 'Добавить товар',
+            searchLabel: 'Поиск по названию или артикулу',
+            typeLabel: 'Вид товара',
+            skuLabel: 'Артикул',
+            nameLabel: 'Название',
+            priceLabel: 'Цена',
+            stockLabel: 'Остаток (stock)',
+            typeEnumLabel: 'Вид товара',
+            categoryLabel: 'Категория',
+            placeholderSearch: 'Например, iPhone или артикул SKU-IPH-15',
+            placeholderSku: 'SKU-IPH-15',
+            placeholderName: 'iPhone 15',
+            placeholderPrice: '499999.00',
+            placeholderStock: '10',
+            addButton: 'Добавить товар',
+            none: 'Нет данных',
+            notFound: 'Не найдено товаров по заданному фильтру',
+            loadError: 'Ошибка загрузки данных: ',
+            createError: 'Ошибка создания товара: ',
+            required: 'Заполните SKU, название, тип и категорию'
+        },
+        en: {
+            title: 'Products',
+            subtitle: 'Product catalog',
+            filterTitle: 'Filter',
+            listTitle: 'Products',
+            addTitle: 'Add product',
+            searchLabel: 'Search by name or SKU',
+            typeLabel: 'Product type',
+            skuLabel: 'SKU',
+            nameLabel: 'Name',
+            priceLabel: 'Price',
+            stockLabel: 'Stock',
+            typeEnumLabel: 'Type (enum ProductType)',
+            categoryLabel: 'Category',
+            placeholderSearch: 'e.g. iPhone or SKU-IPH-15',
+            placeholderSku: 'SKU-IPH-15',
+            placeholderName: 'iPhone 15',
+            placeholderPrice: '499999.00',
+            placeholderStock: '10',
+            addButton: 'Add product',
+            none: 'No data',
+            notFound: 'No products match the filter',
+            loadError: 'Failed to load data: ',
+            createError: 'Failed to create product: ',
+            required: 'Fill SKU, name, type and category'
+        }
+    };
+
+    function applyProductsLang(lang) {
+        const t = productsTexts[lang];
+        document.getElementById('productsTitle').textContent = t.title;
+        document.getElementById('productsSubtitle').textContent = t.subtitle;
+        document.getElementById('productsFilterTitle').textContent = t.filterTitle;
+        document.getElementById('productsListTitle').textContent = t.listTitle;
+        document.getElementById('productsAddTitle').textContent = t.addTitle;
+        document.getElementById('filterQueryLabel').textContent = t.searchLabel;
+        document.getElementById('filterTypeLabel').textContent = t.typeLabel;
+        document.getElementById('prodSkuLabel').textContent = t.skuLabel;
+        document.getElementById('prodNameLabel').textContent = t.nameLabel;
+        document.getElementById('prodPriceLabel').textContent = t.priceLabel;
+        document.getElementById('prodStockLabel').textContent = t.stockLabel;
+        document.getElementById('prodTypeLabel').textContent = t.typeEnumLabel;
+        document.getElementById('prodCategoryLabel').textContent = t.categoryLabel;
+        document.getElementById('filterQuery').placeholder = t.placeholderSearch;
+        document.getElementById('prodSku').placeholder = t.placeholderSku;
+        document.getElementById('prodName').placeholder = t.placeholderName;
+        document.getElementById('prodPrice').placeholder = t.placeholderPrice;
+        document.getElementById('prodStock').placeholder = t.placeholderStock;
+        document.getElementById('btnAddProduct').textContent = t.addButton;
+        document.getElementById('btnRefreshProducts').textContent = CURRENT_LANG === 'ru' ? 'Обновить' : 'Refresh';
+        document.getElementById('productsSkuTh').textContent = t.skuLabel;
+        document.getElementById('productsNameTh').textContent = t.nameLabel;
+        document.getElementById('productsTypeTh').textContent = t.typeLabel;
+        document.getElementById('productsPriceTh').textContent = t.priceLabel;
+        document.getElementById('productsStockTh').textContent = t.stockLabel;
+        document.getElementById('productsCategoryTh').textContent = t.categoryLabel;
+    }
+    let allProducts = [];
+    let categoriesIndex = {};
+
+    async function loadInitial() {
+        try {
+            const [products, categories] = await Promise.all([
+                apiGet('/api/products'),
+                apiGet('/api/categories')
+            ]);
+            allProducts = products;
+            categoriesIndex = {};
+            const select = document.getElementById('prodCategoryId');
+            select.innerHTML = '';
+            for (const c of categories) {
+                categoriesIndex[c.id] = c;
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = `${c.name} (#${c.id})`;
+                select.appendChild(opt);
+            }
+            renderProducts();
+        } catch (e) {
+            showToast(productsTexts[CURRENT_LANG].loadError + e.message, 'error');
+        }
+    }
+
+    function renderProducts() {
+        const body = document.getElementById('productsBody');
+        body.innerHTML = '';
+        const q = document.getElementById('filterQuery').value.trim().toLowerCase();
+        const t = document.getElementById('filterType').value;
+        const filtered = allProducts.filter(p => {
+            const matchesText = !q ||
+                p.name.toLowerCase().includes(q) ||
+                p.sku.toLowerCase().includes(q);
+            const matchesType = !t || p.type === t;
+            return matchesText && matchesType;
+        });
+        if (filtered.length === 0) {
+            body.innerHTML = `<tr><td colspan="7" class="muted">${productsTexts[CURRENT_LANG].notFound}</td></tr>`;
+            return;
+        }
+        for (const p of filtered) {
+            const tr = document.createElement('tr');
+            const category = p.categoryName || (p.category && p.category.name);
+            if (p.stock !== undefined && p.stock <= 2) {
+                tr.classList.add('row-low-stock');
+            }
+            tr.innerHTML = `
+                <td>${p.id}</td>
+                <td>${p.sku}</td>
+                <td>${p.name}</td>
+                <td><span class="badge">${p.type}</span></td>
+                <td>${formatMoney(p.price)}</td>
+                <td>${p.stock}</td>
+                <td>${category ?? ('#' + p.categoryId)}</td>
+            `;
+            body.appendChild(tr);
+        }
+    }
+
+    async function addProduct() {
+        const sku = document.getElementById('prodSku').value.trim();
+        const name = document.getElementById('prodName').value.trim();
+        const price = Number(document.getElementById('prodPrice').value);
+        const stock = Number(document.getElementById('prodStock').value);
+        const type = document.getElementById('prodType').value;
+        const categoryId = Number(document.getElementById('prodCategoryId').value);
+
+        if (!sku || !name || !type || !categoryId) {
+            showToast(productsTexts[CURRENT_LANG].required, 'error');
+            return;
+        }
+
+        try {
+            await apiPost('/api/products', { sku, name, price, stock, type, categoryId });
+            document.getElementById('prodSku').value = '';
+            document.getElementById('prodName').value = '';
+            document.getElementById('prodPrice').value = '';
+            document.getElementById('prodStock').value = '';
+            showToast('OK', 'success');
+            await loadInitial();
+        } catch (e) {
+            showToast(productsTexts[CURRENT_LANG].createError + e.message, 'error');
+        }
+    }
+
+    document.getElementById('btnRefreshProducts').addEventListener('click', loadInitial);
+    document.getElementById('btnAddProduct').addEventListener('click', addProduct);
+    document.getElementById('filterQuery').addEventListener('input', renderProducts);
+    document.getElementById('filterType').addEventListener('change', renderProducts);
+
+    initLanguageToggle(applyProductsLang);
+    loadInitial();
+</script>
+</body>
+</html>
+
+

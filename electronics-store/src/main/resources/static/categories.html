@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Категории — Electronics Store</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="logo">
+            <span class="logo-dot"></span>
+            <span>Electronics Store</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="nav-link" href="/">🏠 Главная</a>
+            <a class="nav-link active" href="/categories.html">📁 Категории</a>
+            <a class="nav-link" href="/products.html">💻 Товары</a>
+            <a class="nav-link" href="/orders.html">🧾 Заказы</a>
+        </nav>
+    </aside>
+    <main class="main">
+        <header class="main-header">
+            <div>
+                <div class="main-title" id="categoriesTitle">Категории</div>
+                <div class="main-subtitle" id="categoriesSubtitle">Справочник категорий товаров</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <button class="btn btn-ghost" id="langToggle">RU</button>
+            </div>
+        </header>
+        <div class="content">
+            <section class="grid-two">
+                <article class="card">
+                    <div class="section-title-row">
+                        <div class="card-title" id="categoriesListTitle">Список категорий</div>
+                        <button class="btn btn-ghost" id="btnRefreshCategories">Обновить</button>
+                    </div>
+                    <div class="table-wrapper" style="max-height: 320px;">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th id="categoriesNameTh">Название</th>
+                                <th style="width: 1%"></th>
+                            </tr>
+                            </thead>
+                            <tbody id="categoriesBody">
+                            <tr><td colspan="3" class="muted">Нет данных</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+                <article class="card">
+                    <div class="section-title-row">
+                        <div class="card-title" id="categoriesAddTitle">Добавить категорию</div>
+                    </div>
+                    <div class="content">
+                        <div class="form-grid">
+                            <div>
+                                <label for="categoryName" id="categoryNameLabel">Название категории</label>
+                                <input id="categoryName" type="text" placeholder="Например, Smartphones">
+                            </div>
+                        </div>
+                        <button class="btn" id="btnAddCategory">Добавить категорию</button>
+                    </div>
+                </article>
+            </section>
+        </div>
+    </main>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+    const categoriesTexts = {
+        ru: {
+            title: 'Категории',
+            subtitle: 'Справочник категорий товаров',
+            listTitle: 'Список категорий',
+            addTitle: 'Добавить категорию',
+            nameLabel: 'Название категории',
+            placeholder: 'Например, Smartphones',
+            addButton: 'Добавить категорию',
+            none: 'Категорий пока нет',
+            deleteButton: 'Удалить',
+            loadError: 'Ошибка загрузки категорий: ',
+            createError: 'Ошибка создания категории: ',
+            deleteConfirm: 'Удалить категорию #',
+            deleteError: 'Не удалось удалить категорию: ',
+            nameRequired: 'Введите название категории',
+            deleteSuffix: '?'
+        },
+        en: {
+            title: 'Categories',
+            subtitle: 'Product categories',
+            listTitle: 'Category list',
+            addTitle: 'Add category',
+            nameLabel: 'Category name',
+            placeholder: 'E.g. Smartphones',
+            addButton: 'Add category',
+            none: 'No categories yet',
+            deleteButton: 'Delete',
+            loadError: 'Failed to load categories: ',
+            createError: 'Failed to create category: ',
+            deleteConfirm: 'Delete category #',
+            deleteError: 'Failed to delete category: ',
+            nameRequired: 'Enter category name',
+            deleteSuffix: '?'
+        }
+    };
+
+    function applyCategoriesLang(lang) {
+        const t = categoriesTexts[lang];
+        document.getElementById('categoriesTitle').textContent = t.title;
+        document.getElementById('categoriesSubtitle').textContent = t.subtitle;
+        document.getElementById('categoriesListTitle').textContent = t.listTitle;
+        document.getElementById('categoriesAddTitle').textContent = t.addTitle;
+        document.getElementById('categoryNameLabel').textContent = t.nameLabel;
+        document.getElementById('categoriesNameTh').textContent = t.nameLabel;
+        document.getElementById('categoryName').placeholder = t.placeholder;
+        document.getElementById('btnAddCategory').textContent = t.addButton;
+        document.getElementById('btnRefreshCategories').textContent = CURRENT_LANG === 'ru' ? 'Обновить' : 'Refresh';
+    }
+
+    async function loadCategories() {
+        try {
+            const categories = await apiGet('/api/categories');
+            const body = document.getElementById('categoriesBody');
+            body.innerHTML = '';
+            if (categories.length === 0) {
+                body.innerHTML = `<tr><td colspan="3" class="muted">${categoriesTexts[CURRENT_LANG].none}</td></tr>`;
+                return;
+            }
+            for (const c of categories) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${c.id}</td>
+                    <td>${c.name}</td>
+                    <td>
+                        <button class="btn btn-ghost" data-id="${c.id}">${categoriesTexts[CURRENT_LANG].deleteButton}</button>
+                    </td>
+                `;
+                tr.querySelector('button').addEventListener('click', () => deleteCategory(c.id));
+                body.appendChild(tr);
+            }
+        } catch (e) {
+            showToast(categoriesTexts[CURRENT_LANG].loadError + e.message, 'error');
+        }
+    }
+
+    async function addCategory() {
+        const name = document.getElementById('categoryName').value.trim();
+        if (!name) {
+            showToast(categoriesTexts[CURRENT_LANG].nameRequired, 'error');
+            return;
+        }
+        try {
+            await apiPost('/api/categories', { name });
+            document.getElementById('categoryName').value = '';
+            await loadCategories();
+        } catch (e) {
+            showToast(categoriesTexts[CURRENT_LANG].createError + e.message, 'error');
+        }
+    }
+
+    async function deleteCategory(id) {
+        const t = categoriesTexts[CURRENT_LANG];
+        if (!confirm(t.deleteConfirm + id + t.deleteSuffix)) return;
+        try {
+            await apiDelete('/api/categories/' + id);
+            await loadCategories();
+        } catch (e) {
+            showToast(t.deleteError + e.message, 'error');
+        }
+    }
+
+    document.getElementById('btnRefreshCategories').addEventListener('click', loadCategories);
+    document.getElementById('btnAddCategory').addEventListener('click', addCategory);
+    initLanguageToggle(applyCategoriesLang);
+    loadCategories();
+</script>
+</body>
+</html>
+
+

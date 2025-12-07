@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Заказы — Electronics Store</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="logo">
+            <span class="logo-dot"></span>
+            <span>Electronics Store</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="nav-link" href="/">🏠 Главная</a>
+            <a class="nav-link" href="/categories.html">📁 Категории</a>
+            <a class="nav-link" href="/products.html">💻 Товары</a>
+            <a class="nav-link active" href="/orders.html">🧾 Заказы</a>
+        </nav>
+    </aside>
+    <main class="main">
+        <header class="main-header">
+            <div>
+                <div class="main-title" id="ordersTitle">Заказы</div>
+                <div class="main-subtitle" id="ordersSubtitle">Оформление и контроль заказов</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <button class="btn btn-ghost" id="langToggle">RU</button>
+            </div>
+        </header>
+        <div class="content">
+            <section class="grid-two">
+                <article class="card">
+                    <div class="section-title-row">
+                        <div class="card-title" id="ordersListTitle">Список заказов</div>
+                        <button class="btn btn-ghost" id="btnRefreshOrders">Обновить</button>
+                    </div>
+                    <div class="table-wrapper" style="max-height: 360px;">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th id="ordersClientTh">Клиент</th>
+                                <th id="ordersPhoneTh">Телефон</th>
+                                <th id="ordersStatusTh">Статус</th>
+                                <th id="ordersTotalTh">Сумма</th>
+                                <th id="ordersDateTh">Дата</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody id="ordersBody">
+                            <tr><td colspan="7" class="muted">Нет данных</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+                <article class="card">
+                    <div class="section-title-row">
+                        <div class="card-title" id="ordersCreateTitle">Создать заказ</div>
+                    </div>
+                    <div class="content">
+                        <div class="form-grid">
+                            <div>
+                                <label for="ordCustomerName" id="ordCustomerNameLabel">Имя клиента</label>
+                                <input id="ordCustomerName" type="text" placeholder="Иван Иванов">
+                            </div>
+                            <div>
+                                <label for="ordCustomerPhone" id="ordCustomerPhoneLabel">Телефон</label>
+                                <input id="ordCustomerPhone" type="text" placeholder="+77000000000">
+                            </div>
+                        </div>
+                        <div class="card" style="margin-top: 10px;">
+                            <div class="section-title-row">
+                                <div class="card-title" id="orderItemsTitle">Позиции заказа</div>
+                            </div>
+                            <div class="form-grid">
+                                <div>
+                                    <label for="ordProductSelect" id="ordProductSelectLabel">Товар</label>
+                                    <select id="ordProductSelect">
+                                        <option value="">Загрузка...</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="ordQuantity" id="ordQuantityLabel">Количество</label>
+                                    <input id="ordQuantity" type="number" min="1" value="1">
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary" id="btnAddItem">Добавить позицию</button>
+                            <div class="items-list" id="itemsList"></div>
+                        </div>
+                        <button class="btn" id="btnCreateOrder">Создать заказ</button>
+                    </div>
+                </article>
+            </section>
+        </div>
+    </main>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+    const ordersTexts = {
+        ru: {
+            title: 'Заказы',
+            subtitle: 'Оформление и контроль заказов',
+            listTitle: 'Список заказов',
+            createTitle: 'Создать заказ',
+            customerName: 'Имя клиента',
+            customerPhone: 'Телефон',
+            itemsTitle: 'Позиции заказа',
+            productLabel: 'Товар',
+            qtyLabel: 'Количество',
+            placeholderName: 'Иван Иванов',
+            placeholderPhone: '+77000000000',
+            placeholderQty: '1',
+            addItem: 'Добавить позицию',
+            createOrder: 'Создать заказ',
+            none: 'Нет данных',
+            noOrders: 'Заказов пока нет',
+            noItems: 'Позиции ещё не добавлены',
+            statusLabel: 'Статус',
+            totalLabel: 'Сумма',
+            dateLabel: 'Дата',
+            loadOrdersError: 'Ошибка загрузки заказов: ',
+            loadProductsError: 'Ошибка загрузки товаров: ',
+            updateStatusError: 'Ошибка обновления статуса: ',
+            itemRemoveConfirm: 'Удалить позицию из заказа?',
+            createOrderError: 'Ошибка создания заказа: ',
+            fieldsRequired: 'Заполните имя, телефон и добавьте хотя бы одну позицию',
+            selectProductError: 'Выберите товар и введите количество > 0'
+        },
+        en: {
+            title: 'Orders',
+            subtitle: 'Order management',
+            listTitle: 'Orders',
+            createTitle: 'Create order',
+            customerName: 'Customer name',
+            customerPhone: 'Phone',
+            itemsTitle: 'Order items',
+            productLabel: 'Product',
+            qtyLabel: 'Quantity',
+            placeholderName: 'John Doe',
+            placeholderPhone: '+77000000000',
+            placeholderQty: '1',
+            addItem: 'Add item',
+            createOrder: 'Create order',
+            none: 'No data',
+            noOrders: 'No orders yet',
+            noItems: 'No items yet',
+            statusLabel: 'Status',
+            totalLabel: 'Total',
+            dateLabel: 'Date',
+            loadOrdersError: 'Failed to load orders: ',
+            loadProductsError: 'Failed to load products: ',
+            updateStatusError: 'Failed to update status: ',
+            itemRemoveConfirm: 'Remove item from order?',
+            createOrderError: 'Failed to create order: ',
+            fieldsRequired: 'Fill customer name, phone and add at least one item',
+            selectProductError: 'Select product and quantity > 0'
+        }
+    };
+
+    function applyOrdersLang(lang) {
+        const t = ordersTexts[lang];
+        document.getElementById('ordersTitle').textContent = t.title;
+        document.getElementById('ordersSubtitle').textContent = t.subtitle;
+        document.getElementById('ordersListTitle').textContent = t.listTitle;
+        document.getElementById('ordersCreateTitle').textContent = t.createTitle;
+        document.getElementById('ordCustomerNameLabel').textContent = t.customerName;
+        document.getElementById('ordCustomerPhoneLabel').textContent = t.customerPhone;
+        document.getElementById('orderItemsTitle').textContent = t.itemsTitle;
+        document.getElementById('ordProductSelectLabel').textContent = t.productLabel;
+        document.getElementById('ordQuantityLabel').textContent = t.qtyLabel;
+        document.getElementById('ordCustomerName').placeholder = t.placeholderName;
+        document.getElementById('ordCustomerPhone').placeholder = t.placeholderPhone;
+        document.getElementById('ordQuantity').placeholder = t.placeholderQty;
+        document.getElementById('btnAddItem').textContent = t.addItem;
+        document.getElementById('btnCreateOrder').textContent = t.createOrder;
+        document.getElementById('btnRefreshOrders').textContent = CURRENT_LANG === 'ru' ? 'Обновить' : 'Refresh';
+        document.getElementById('ordersClientTh').textContent = t.customerName;
+        document.getElementById('ordersPhoneTh').textContent = t.customerPhone;
+        document.getElementById('ordersStatusTh').textContent = t.statusLabel || 'Status';
+        document.getElementById('ordersTotalTh').textContent = t.totalLabel || 'Total';
+        document.getElementById('ordersDateTh').textContent = t.dateLabel || 'Date';
+    }
+    let allOrders = [];
+    let orderItemsBuffer = [];
+    let productsIndex = {};
+
+    async function loadOrders() {
+        try {
+            const orders = await apiGet('/api/orders');
+            allOrders = orders;
+            renderOrders();
+        } catch (e) {
+            showToast(ordersTexts[CURRENT_LANG].loadOrdersError + e.message, 'error');
+        }
+    }
+
+    function renderOrders() {
+        const body = document.getElementById('ordersBody');
+        body.innerHTML = '';
+        if (!allOrders.length) {
+            body.innerHTML = `<tr><td colspan="7" class="muted">${ordersTexts[CURRENT_LANG].noOrders}</td></tr>`;
+            return;
+        }
+        for (const o of allOrders) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${o.id}</td>
+                <td>${o.customerName}</td>
+                <td>${o.customerPhone}</td>
+                <td>
+                    <select data-id="${o.id}">
+                        <option value="NEW" ${o.status === 'NEW' ? 'selected' : ''}>NEW</option>
+                        <option value="PAID" ${o.status === 'PAID' ? 'selected' : ''}>PAID</option>
+                        <option value="CANCELED" ${o.status === 'CANCELED' ? 'selected' : ''}>CANCELED</option>
+                    </select>
+                </td>
+                <td>${formatMoney(o.total)}</td>
+                <td>${(o.createdAt || '').replace('T', ' ').slice(0, 16)}</td>
+                <td>
+                    <button class="btn btn-ghost" data-details="${o.id}">Подробнее</button>
+                    <button class="btn btn-secondary" data-status="${o.id}">Обновить статус</button>
+                </td>
+            `;
+            const detailsBtn = tr.querySelector('button[data-details]');
+            detailsBtn.addEventListener('click', () => toggleOrderDetails(o, tr));
+            const statusBtn = tr.querySelector('button[data-status]');
+            statusBtn.addEventListener('click', () => updateStatus(o.id, tr.querySelector('select').value));
+            body.appendChild(tr);
+        }
+    }
+
+    function toggleOrderDetails(order, rowElement) {
+        const next = rowElement.nextSibling;
+        if (next && next.dataset && next.dataset.itemsRow === String(order.id)) {
+            next.remove();
+            return;
+        }
+        const tr = document.createElement('tr');
+        tr.dataset.itemsRow = String(order.id);
+        const col = document.createElement('td');
+        col.colSpan = 7;
+        if (!order.items || !order.items.length) {
+            col.innerHTML = `<div class="muted">${ordersTexts[CURRENT_LANG].noItems}</div>`;
+        } else {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'table-wrapper';
+            wrapper.innerHTML = `
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Кол-во</th>
+                        <th>Цена</th>
+                        <th>Сумма</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    ${order.items.map(it => `
+                        <tr>
+                            <td>${it.productName}</td>
+                            <td>${it.quantity}</td>
+                            <td>${formatMoney(it.price)}</td>
+                            <td>${formatMoney(it.lineTotal)}</td>
+                        </tr>
+                    `).join('')}
+                    </tbody>
+                </table>
+            `;
+            col.appendChild(wrapper);
+        }
+        tr.appendChild(col);
+        rowElement.parentNode.insertBefore(tr, rowElement.nextSibling);
+    }
+
+    async function updateStatus(id, status) {
+        try {
+            await apiPatch('/api/orders/' + id + '/status', { status });
+            showToast('OK', 'success');
+            await loadOrders();
+        } catch (e) {
+            showToast(ordersTexts[CURRENT_LANG].updateStatusError + e.message, 'error');
+        }
+    }
+
+    async function loadProductsForOrders() {
+        try {
+            const products = await apiGet('/api/products');
+            productsIndex = {};
+            const select = document.getElementById('ordProductSelect');
+            select.innerHTML = '';
+            for (const p of products) {
+                productsIndex[p.id] = p;
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.textContent = `${p.name} (${formatMoney(p.price)} ₸)`;
+                select.appendChild(opt);
+            }
+        } catch (e) {
+            showToast(ordersTexts[CURRENT_LANG].loadProductsError + e.message, 'error');
+        }
+    }
+
+    function renderItemsBuffer() {
+        const box = document.getElementById('itemsList');
+        if (!orderItemsBuffer.length) {
+            box.innerHTML = `<div class="muted">${ordersTexts[CURRENT_LANG].noItems}</div>`;
+            return;
+        }
+        box.innerHTML = '';
+        orderItemsBuffer.forEach((item, index) => {
+            const row = document.createElement('div');
+            row.className = 'items-list-row';
+            const product = productsIndex[item.productId];
+            const name = product ? product.name : ('#' + item.productId);
+            row.innerHTML = `
+                <span>${name}</span>
+                <span>x${item.quantity}</span>
+            `;
+            row.addEventListener('click', () => {
+                if (confirm(ordersTexts[CURRENT_LANG].itemRemoveConfirm)) {
+                    orderItemsBuffer.splice(index, 1);
+                    renderItemsBuffer();
+                }
+            });
+            box.appendChild(row);
+        });
+    }
+
+    function addItemToBuffer() {
+        const productId = Number(document.getElementById('ordProductSelect').value);
+        const quantity = Number(document.getElementById('ordQuantity').value);
+        if (!productId || !quantity || quantity <= 0) {
+            showToast(ordersTexts[CURRENT_LANG].selectProductError, 'error');
+            return;
+        }
+        orderItemsBuffer.push({ productId, quantity });
+        renderItemsBuffer();
+    }
+
+    async function createOrder() {
+        const customerName = document.getElementById('ordCustomerName').value.trim();
+        const customerPhone = document.getElementById('ordCustomerPhone').value.trim();
+        if (!customerName || !customerPhone || !orderItemsBuffer.length) {
+            showToast(ordersTexts[CURRENT_LANG].fieldsRequired, 'error');
+            return;
+        }
+        try {
+            await apiPost('/api/orders', {
+                customerName,
+                customerPhone,
+                items: orderItemsBuffer
+            });
+            document.getElementById('ordCustomerName').value = '';
+            document.getElementById('ordCustomerPhone').value = '';
+            orderItemsBuffer = [];
+            renderItemsBuffer();
+            showToast('OK', 'success');
+            await loadOrders();
+        } catch (e) {
+            showToast(ordersTexts[CURRENT_LANG].createOrderError + e.message, 'error');
+        }
+    }
+
+    document.getElementById('btnRefreshOrders').addEventListener('click', loadOrders);
+    document.getElementById('btnAddItem').addEventListener('click', addItemToBuffer);
+    document.getElementById('btnCreateOrder').addEventListener('click', createOrder);
+
+    initLanguageToggle(applyOrdersLang);
+    loadOrders();
+    loadProductsForOrders();
+    renderItemsBuffer();
+</script>
+</body>
+</html>
+
+
