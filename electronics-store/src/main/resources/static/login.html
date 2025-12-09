@@ -105,7 +105,7 @@
         setAuthToken(username, password);
         // Опционально можно сделать пробный запрос, но для простоты сразу переходим
         showToast(t.success, 'success');
-        setTimeout(() => window.location.href = '/', 600);
+        setTimeout(() => window.location.href = '/dashboard.html', 600);
     }
 
     document.getElementById('btnLogin').addEventListener('click', handleLogin);
